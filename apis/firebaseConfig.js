@@ -11,13 +11,7 @@ import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/aut
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 // WARNING FROM DEV, THIS IS A TEST PROJECT, PLEASE DON'T SPAM (it probably won't work after a few days)
 const firebaseConfig = {
-  apiKey: "AIzaSyAkK4A4WcyWTBwk7mAbxasCzW77rn6in04",
-  authDomain: "react-firebase-demo-f9ba3.firebaseapp.com",
-  projectId: "react-firebase-demo-f9ba3",
-  storageBucket: "react-firebase-demo-f9ba3.appspot.com",
-  messagingSenderId: "42717602420",
-  appId: "1:42717602420:web:bdd4c0cf7f2e97c992e721",
-  measurementId: "G-YXQSW5HQGF"
+  // your api stuff here
 };
 
 // Initialize Firebase

@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/LoginScreen"; // Correct path
 import SignupScreen from "../screens/SignupScreen"; // Correct path
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
-import { HomeScreen } from "../HomeScreen";
+import { HomeScreen } from "../screens/HomeScreen";
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { app } from "../apis/firebaseConfig";
+import { HomeScreen } from "./HomeScreen";
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
@@ -27,8 +28,9 @@ const LoginScreen = ({ navigation }) => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        Alert.alert("Login Success", `Welcome ${user.email}`);
+        // Alert.alert("Login Success", `Welcome ${user.email}`);
         setLoading(false);
+        navigation.navigate("Home");
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -44,7 +46,7 @@ const LoginScreen = ({ navigation }) => {
           style={{ width: 200, height: 200 }}
           source={require("../assets/flame.png")}
         />
-        <Text style={styles.screenTitle}>Welcome back!</Text>
+        <Text style={styles.screenTitle}>Welcome!</Text>
       </View>
 
       {/* Wrapping each TextInput inside a View */}

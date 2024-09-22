@@ -1,10 +1,24 @@
 import React, { useState } from "react";
-import { Text, StyleSheet, View, TextInput, Pressable, Button } from "react-native";
+import { Text, StyleSheet, View, TextInput, Pressable, Alert } from "react-native";
 import { Formik } from "formik";
-// import auth from "@react-native-firebase/auth";
-import { auth } from "../apis/firebaseConfig";
+import * as Yup from "yup";  // Import Yup for validation
+import { auth } from "../apis/firebaseConfig";  // Using Firebase Auth from your config
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useTogglePasswordVisibility } from "../components/useTogglePasswordVisibility";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+// Define a validation schema with Yup
+const signupValidationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, ({ min }) => `Password must be at least ${min} characters`)
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password"), null], "Passwords do not match")
+    .required("Please confirm your password"),
+});
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -16,27 +30,34 @@ export const SignupScreen = ({ navigation }) => {
     confirmPasswordIcon,
     confirmPasswordVisibility,
   } = useTogglePasswordVisibility();
+
   const handleSignup = async (values) => {
     const { email, password } = values;
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .catch((error) => setErrorState(error.message));
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);  // Firebase Auth method
+      // Handle successful signup logic (e.g., navigate to another screen)
+      console.log("Account created successfully!");
+      Alert.alert("Success!","Account created successfully!");
+      navigation.navigate("Login");
+    } catch (error) {
+      setErrorState(error.message);
+      alert(error.message)
+    }
   };
+
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView enableOnAndroid={true}>
-        {/* LogoContainer: consits app logo and screen title */}
         <View style={styles.logoContainer}>
           <Text style={styles.screenTitle}>Create a new account!</Text>
         </View>
-        {/* Formik Wrapper */}
         <Formik
           initialValues={{
             email: "",
             password: "",
             confirmPassword: "",
           }}
-          // validationSchema={signupValidationSchema}
+          validationSchema={signupValidationSchema}
           onSubmit={(values) => handleSignup(values)}
         >
           {({
@@ -48,10 +69,9 @@ export const SignupScreen = ({ navigation }) => {
             handleBlur,
           }) => (
             <>
-              {/* Input fields */}
+              {/* Email Input */}
               <TextInput
                 name="email"
-                leftIconName="email"
                 placeholder="Enter email"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -62,9 +82,13 @@ export const SignupScreen = ({ navigation }) => {
                 onBlur={handleBlur("email")}
                 style={styles.input}
               />
+              {errors.email && touched.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
+
+              {/* Password Input */}
               <TextInput
                 name="password"
-                leftIconName="key-variant"
                 placeholder="Enter password"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -77,10 +101,14 @@ export const SignupScreen = ({ navigation }) => {
                 onBlur={handleBlur("password")}
                 style={styles.input}
               />
+              {errors.password && touched.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+
+              {/* Confirm Password Input */}
               <TextInput
                 name="confirmPassword"
-                leftIconName="key-variant"
-                placeholder="Enter password again"
+                placeholder="Confirm password"
                 autoCapitalize="none"
                 autoCorrect={false}
                 secureTextEntry={confirmPasswordVisibility}
@@ -92,11 +120,15 @@ export const SignupScreen = ({ navigation }) => {
                 onBlur={handleBlur("confirmPassword")}
                 style={styles.input}
               />
-              
-              {/* Display Screen Error Mesages */}
-              {/* {errorState !== "" ? (
-                <FormErrorMessage error={errorState} visible={true} />
-              ) : null} */}
+              {errors.confirmPassword && touched.confirmPassword && (
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+              )}
+
+              {/* Display any Firebase error messages */}
+              {errorState !== "" && (
+                <Text style={styles.errorText}>{errorState}</Text>
+              )}
+
               {/* Signup button */}
               <Pressable style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Sign Up</Text>
@@ -104,12 +136,12 @@ export const SignupScreen = ({ navigation }) => {
             </>
           )}
         </Formik>
-        {/* Button to navigate to Login screen */}
         <Pressable
           style={styles.borderlessButtonContainer}
-          // title="Already have an account?"
-          onPress={() => console.log("Create Account success!")}
-        />
+          onPress={() => navigation.navigate("Login")} // Navigate to Login screen
+        >
+          <Text style={styles.borderlessButtonText}>Already have an account? Log in</Text>
+        </Pressable>
       </KeyboardAwareScrollView>
     </View>
   );

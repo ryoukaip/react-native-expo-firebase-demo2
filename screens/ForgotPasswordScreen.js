@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Text, StyleSheet, View, TextInput, Pressable, Alert } from "react-native";
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import { auth } from "../apis/firebaseConfig";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -10,11 +11,12 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const handlePasswordReset = async (values) => {
     const { email } = values;
     try {
-      await auth.sendPasswordResetEmail(email);
+      await sendPasswordResetEmail(auth, email);
       Alert.alert("Password Reset", "Check your email for a password reset link.");
       navigation.navigate("Login"); // Navigate to the login screen after successful reset
     } catch (error) {
       setErrorState(error.message);
+      Alert.alert(error.message);
     }
   };
 
