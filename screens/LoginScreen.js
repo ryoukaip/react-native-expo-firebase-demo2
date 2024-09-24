@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }) => {
         const user = userCredential.user;
         // Alert.alert("Login Success", `Welcome ${user.email}`);
         setLoading(false);
-        navigation.navigate("Home");
+        navigation.navigate("ListUser");
       })
       .catch((error) => {
         const errorMessage = error.message;
